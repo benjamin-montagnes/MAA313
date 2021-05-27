@@ -49,10 +49,10 @@ def split(l, key=None, k=7, limmed=100):
 def inv(p):
     return (p[1], p[0])
 
-def variance_xy(points):
+def VAR(points):
     n = len(points)
-    sum_x, sum_y, sum_sqx, sum_sqy = 0, 0, 0, 0
-    for (x, y) in points:
+    sum_x,sum_y,sum_sqx,sum_sqy = 0,0,0,0
+    for (x,y) in points:
         sum_x += x
         sum_y += y
         sum_sqx += x**2
@@ -177,8 +177,8 @@ def delaunay_triangulation(V):
                 FIRST[a], FIRST[c] = b, b
                 
         else:
-            var_x, var_y = variance_xy(V)
-            if var_y < var_x:
+            varx, vary = VAR(V)
+            if vary < varx:
                 med = split(V)
                 V_L = [p for p in V if p < med]
                 V_R = [p for p in V if p >= med]
@@ -188,16 +188,15 @@ def delaunay_triangulation(V):
                 MERGE(X, Y)
             else:
                 med = split(V, key=inv)
-                down = [p for p in V if inv(p) < inv(med)]
-                up = [p for p in V if inv(p) >= inv(med)]
-                DT(down)
-                DT(up)
-                X, Y = HULL(max(down, key=inv), min(up, key=inv))
+                V_D = [p for p in V if inv(p) < inv(med)]
+                V_U = [p for p in V if inv(p) >= inv(med)]
+                DT(V_D)
+                DT(V_U)
+                X, Y = HULL(max(V_D, key=inv), min(V_U, key=inv))
                 MERGE(X, Y)
             
     DT(V)
     return SUCC
-  
   
 #_______________________________________________________________________________
 
