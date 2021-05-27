@@ -14,11 +14,9 @@ from random import randrange
 CW = 1
 CCW = -1
 
-def orientation(a, b, c):
-    det= np.linalg.det(np.array(([[b[0]-a[0],b[1]-a[1]],[c[0]-a[0],c[1]-a[1]]])))
-    if det > 0: return CW
-    elif det == 0: return 0
-    return CCW
+#Clockwise (CW) and Counter Clockwise (CCW)
+CW = 1
+CCW = -1
 
 def QTEST(H, I, J, K):
     """
@@ -33,28 +31,24 @@ def QTEST(H, I, J, K):
     if det > 0: return True
     return False
 
-def _pseudo_mediane(l, start, end, key=None, k=7, limmed=100):
-    if end - start <= limmed:
-        nl = sorted(l[start:end], key=key)
-        return nl[len(nl)//2]
-    sous_medianes = [_pseudo_mediane(l, start+(i*(end-start))//k,
-                                        start+((i+1)*(end-start))//k,
-                                        key, k, limmed)
-                     for i in range(k)]
-    nl = sorted(sous_medianes, key=key)
-    return nl[len(nl)//2]
+def orientation(a, b, c):
+    det=np.linalg.det(np.array(([[b[0]-a[0],b[1]-a[1]],[c[0]-a[0],c[1]-a[1]]])))
+    if det > 0: return CW
+    elif det == 0: return 0
+    return CCW
 
-def pseudo_mediane(l, key=None, k=7, limmed=100):
+def split(l, key=None, k=7, limmed=100):
+  def m1(l, key=None):
     n = len(l)
-    if n - 0 <= limmed:
-        nl = sorted(l[0:n], key=key)
-        return nl[len(nl)//2]
-    sous_medianes = [_pseudo_mediane(l, 0+(i*(n-0))//k,
-                                        0+((i+1)*(n-0))//k,
-                                        key, k, limmed)
-                     for i in range(k)]
-    nl = sorted(sous_medianes, key=key)
-    return nl[len(nl)//2]
+    l = sorted(l, key=key)
+    return l[n//2]
+    
+  def m2(l, s, e, key=None, k=7, limmed=100):
+    if e - s <= limmed: return m1(l[s:e], key)
+    recurs = [m2(l,s+(i*(e-s))//k,s+((i+1)*(e-s))//k,key,k,limmed) for i in range(k)]
+    return m1(recurs, key)
+  
+  return m2(l, 0, len(l), key, k, limmed)
 
 def inv(p):
     return (p[1], p[0])
@@ -116,49 +110,49 @@ def delaunay_triangulation(V):
             elif orientation(X, Y, Z2) == CCW: X, Z2 = Z2, PRED[Z2, X]
             else: return (X, Y)
 
-    def MERGE(x, y):
+    def MERGE(X, Y):
         """
         MERGE is input two triangulations and the upper and lower common tangents
         of their convex hulls. It merges the two triangulations, starting with 
         the lower common tangent, zigzagging upward until the upper common 
         tangent is reached.
         """
-        INSERT(x, y, FIRST[x], PRED[y, FIRST[y]])
-        FIRST[x] = y
+        INSERT(X, Y, FIRST[X], PRED[Y, FIRST[Y]])
+        FIRST[X] = Y
         while True: 
-            if orientation(x, y, PRED[y, x]) == CW:
-                y1 = PRED[y, x]
-                y2 = PRED[y, y1]
-                while QTEST(x, y, y1, y2):
-                    DELETE(y, y1)
-                    y1 = y2
-                    y2 = PRED[y, y1]
+            if orientation(X, Y, PRED[Y, X]) == CW:
+                Y1 = PRED[Y, X]
+                Y2 = PRED[Y, Y1]
+                while QTEST(X, Y, Y1, Y2):
+                    DELETE(Y, Y1)
+                    Y1 = Y2
+                    Y2 = PRED[Y, Y1]
             else:
-                y1 = None
-            if orientation(x, y, SUCC[x, y]) == CW:
-                x1 = SUCC[x, y]
-                x2 = SUCC[x, x1]
-                while QTEST(x, y, x1, x2):
-                    DELETE(x, x1)
-                    x1 = x2
-                    x2 = SUCC[x, x1]
+                Y1 = None
+            if orientation(X, Y, SUCC[X, Y]) == CW:
+                X1 = SUCC[X, Y]
+                X2 = SUCC[X, X1]
+                while QTEST(X, Y, X1, X2):
+                    DELETE(X, X1)
+                    X1 = X2
+                    X2 = SUCC[X, X1]
             else:
-                x1 = None
-            if x1 is None and y1 is None:
+                X1 = None
+            if X1 is None and Y1 is None:
                 break
-            elif x1 is None:
-                INSERT(y1, x, y, y)
-                y = y1
-            elif y1 is None:
-                INSERT(y, x1, x, x)
-                x = x1
-            elif QTEST(x, y, y1, x1):
-                INSERT(y, x1, x, x)
-                x = x1
+            elif X1 is None:
+                INSERT(Y1, X, Y, Y)
+                Y = Y1
+            elif Y1 is None:
+                INSERT(Y, X1, X, X)
+                X = X1
+            elif QTEST(X, Y, Y1, X1):
+                INSERT(Y, X1, X, X)
+                X = X1
             else:
-                INSERT(y1, x, y, y)
-                y = y1
-        FIRST[y] = x
+                INSERT(Y1, X, Y, Y)
+                Y = Y1
+        FIRST[Y] = X
 
     def DT(V):
         n = len(V)
@@ -189,21 +183,21 @@ def delaunay_triangulation(V):
         else:
             var_x, var_y = variance_xy(V)
             if var_y < var_x:
-                med = pseudo_mediane(V)
+                med = split(V)
                 V_L = [p for p in V if p < med]
                 V_R = [p for p in V if p >= med]
                 DT(V_L)
                 DT(V_R)
-                x, y = HULL(max(V_L), min(V_R))
-                MERGE(x, y)
+                X, Y = HULL(max(V_L), min(V_R))
+                MERGE(X, Y)
             else:
-                med = pseudo_mediane(V, key=inv)
+                med = split(V, key=inv)
                 down = [p for p in V if inv(p) < inv(med)]
                 up = [p for p in V if inv(p) >= inv(med)]
                 DT(down)
                 DT(up)
-                x, y = HULL(max(down, key=inv), min(up, key=inv))
-                MERGE(x, y)
+                X, Y = HULL(max(down, key=inv), min(up, key=inv))
+                MERGE(X, Y)
             
     DT(V)
     return SUCC
