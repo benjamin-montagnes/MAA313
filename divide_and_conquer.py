@@ -14,10 +14,6 @@ from random import randrange
 CW = 1
 CCW = -1
 
-#Clockwise (CW) and Counter Clockwise (CCW)
-CW = 1
-CCW = -1
-
 def QTEST(H, I, J, K):
     """
     QTEST(H,I,J,K) tests the quadrilateral having CCW ordered vertices H,I,J,K. 
