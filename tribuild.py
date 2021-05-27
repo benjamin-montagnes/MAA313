@@ -306,7 +306,7 @@ ax.triplot(x,y);
 
 #_______________________________________________________________________________
 
-# Testing with random points
+# Test of our algorithm with random points
 
 def intpoints(n, nbpoints):
     points = set()
@@ -317,7 +317,7 @@ def intpoints(n, nbpoints):
     return list(points)
 
 rec = Rectangle(Point(0,100), Point(100,100), Point(0,0),Point(100,0))
-points = genere(5,100)
+points = intpoints(5,100)
 print(points)
 V = [Point(x,y) for (x,y) in points]
 Triangulation = Tribuild(V, rec)
@@ -333,5 +333,3 @@ tri = Delaunay(seeds2)
 plt.triplot(seeds2[:,0], seeds2[:,1], tri.simplices)
 plt.plot(seeds2[:,0], seeds2[:,1], 'o')
 plt.show()
-
-  
