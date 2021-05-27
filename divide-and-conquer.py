@@ -212,6 +212,7 @@ def delaunay_triangulation(V):
 #_______________________________________________________________________________
 
 # Test of our algorithm with random points
+
 def intpoints(n, nbpoints):
     points = set()
     x, y = randrange(nbpoints), randrange(nbpoints)
@@ -234,4 +235,16 @@ for i in dt:
   plt.plot([list(i[0])[0],list(i[1])[0]],[list(i[0])[1],list(i[1])[1]], 'steelblue', zorder=1)
 for i in seeds:
   plt.scatter(i[0], i[1], c='green', zorder=2)
+plt.show()
+
+#_______________________________________________________________________________
+
+# The result we should obtain
+
+from scipy.spatial import Delaunay
+seeds2 = np.array([list(i) for i in seeds])
+fig = plt.figure(figsize=(15,15))
+tri = Delaunay(seeds2)
+plt.triplot(seeds2[:,0], seeds2[:,1], tri.simplices)
+plt.plot(seeds2[:,0], seeds2[:,1], 'o')
 plt.show()
