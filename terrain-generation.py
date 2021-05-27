@@ -3,6 +3,8 @@ import random
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.spatial import Delaunay
+from divide-and-conquer import delaunay_triangulation
+from tribuild import Tribuild, Point, Rectangle
 
 #_______________________________________________________________________________
 
@@ -189,20 +191,29 @@ def moutain_construct(terrain, nbr=100): #construct the terrain
 def squeeze_terrain(x,y,nbr=100):
     return [ (x[i],y[i]) for i in range(nbr) ]
 
+#_______________________________________________________________________________
+#Creation of the Data ([nbr mountain, nbr valley], xmin, xmax, ymin, ymin)
+
 terrain = Terrain([1, 2],0,100,0,100)
-#x,y,z = moutain_construct(terrain)
-x,y,z = moutain_construct_old(terrain)
+x,y,z = moutain_construct(terrain)
 show_dataset(terrain, x,y,z)
 
 #_______________________________________________________________________________
+#Triangulation using Tribuild
 
 points = squeeze_terrain(x,y)
 rec = Rectangle(Point(0,100), Point(100,100), Point(0,0),Point(100,0))
 V = [Point(x,y) for (x,y) in points]
-print(points)
-print(V)
 Triangulation = Tribuild(V, rec)
 show_tris(Triangulation)
+
+#_______________________________________________________________________________
+#Triangulation using Tribuild
+
+points = squeeze_terrain(x,y)
+dt = delaunay_triangulation(points)
+
+
 
 
 
