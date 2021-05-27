@@ -8,3 +8,9 @@ Generating Delaunay triangles using two different methods : The first algorithm 
 ### Application
 
 We chose to work on an application to terrain generation. We will see a technique for generating terrain by using delaunay triangulation.
+
+## The project
+
+Project by Antonin Wattel, Farah El Euch, Arthur Collette and Benjamin
+
+The algorithms used are from http://www.personal.psu.edu/faculty/c/x/cxc11/AERSP560/DELAUNEY/13_Two_algorithms_Delauney.pdf (Authors: D. T. Lee and B. J. Schachter)
