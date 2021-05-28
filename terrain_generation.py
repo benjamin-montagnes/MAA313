@@ -3,7 +3,7 @@ import random
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.spatial import Delaunay
-from divide-and-conquer import delaunay_triangulation
+from divide_and_conquer import delaunay_triangulation
 from tribuild import Tribuild, Point, Rectangle
 
 #_______________________________________________________________________________
